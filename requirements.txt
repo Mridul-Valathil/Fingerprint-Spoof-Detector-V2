@@ -1,0 +1,11 @@
+# Core Machine Learning & Data Handling
+tensorflow-macos
+tensorflow-metal
+opencv-python
+scikit-learn
+numpy
+pandas
+seaborn
+
+# Web Application Framework
+Flask
