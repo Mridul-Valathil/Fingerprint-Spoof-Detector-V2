@@ -15,4 +15,4 @@ data/
 *.json
 
 # macOS specific files
-.DS_Store
+.DS_Storetoken/

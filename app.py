@@ -7,22 +7,17 @@ import os
 import random
 from datetime import datetime
 import base64
-import sys
-
-# Add the macOS fix directly into the script
-if sys.platform == 'darwin':
-    os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 app = Flask(__name__)
 
 # --- Configuration for V2 ---
 LIVENESS_MODEL_FILE = 'liveness_model.keras'
-MATERIAL_MODEL_FILE = 'material_model_v2.keras' # Using the reliable CNN model
+MATERIAL_MODEL_FILE = 'material_model_v2.keras'
 MATERIAL_LABEL_MAP_FILE = 'material_label_map.json'
 LOG_FILE = 'scan_log_v2.json'
 IMG_SIZE = 96
 
-# --- Lazy Load Globals ---
+# --- Lazy Load Globals for V2 ---
 liveness_model = None
 material_model = None
 material_class_names = None
@@ -67,7 +62,9 @@ def log_event(log_data):
         json.dump(logs, f, indent=4)
 
 def analyze_image_v2(image, source, filename="N/A"):
-    """Implements the simplified two-phase prediction pipeline."""
+    """
+    Implements the simplified two-phase prediction pipeline.
+    """
     load_models_once()
     if not all([liveness_model, material_model, material_class_names]):
         return {"error": "Models are not loaded, cannot perform analysis."}
@@ -77,10 +74,15 @@ def analyze_image_v2(image, source, filename="N/A"):
     # --- PHASE 1: Liveness Detection ---
     liveness_pred = liveness_model.predict(input_tensor)[0][0]
     is_live = liveness_pred > 0.5
-    final_confidence = liveness_pred if is_live else 1 - liveness_pred
-    
-    suspected_material = None
-    predicted_class_for_log = "live" if is_live else "fake"
+    liveness_confidence = liveness_pred if is_live else 1 - liveness_pred
+
+    result = {
+        "is_spoof": not is_live,
+        "liveness_status": "Live" if is_live else "Fake",
+        "liveness_confidence": float(liveness_confidence),
+        "suspected_material": None,
+        "material_confidence": None
+    }
 
     # --- PHASE 2: Material Classification (only if fake) ---
     if not is_live:
@@ -89,21 +91,18 @@ def analyze_image_v2(image, source, filename="N/A"):
         material_confidence = np.max(material_preds)
         
         material_name = material_class_names[material_index]
-        suspected_material = material_name
-        final_confidence = material_confidence # Override with specialist's confidence
-        predicted_class_for_log = f"fake-{material_name}"
+        result["suspected_material"] = material_name
+        result["material_confidence"] = float(material_confidence)
 
-    # --- Prepare Result & Log ---
+    # --- Logging ---
+    predicted_class_for_log = result["liveness_status"]
+    log_confidence = result["liveness_confidence"]
+    if result["is_spoof"] and result["suspected_material"]:
+        predicted_class_for_log = f"fake-{result['suspected_material']}"
+        log_confidence = result["material_confidence"]
+
     _, buffer = cv2.imencode('.png', cv2.resize(image, (100, 100)))
     img_preview_b64 = base64.b64encode(buffer).decode('utf-8')
-
-    result = {
-        "is_spoof": not is_live,
-        "liveness_status": "Live" if is_live else "Fake",
-        "confidence": float(final_confidence),
-        "suspected_material": suspected_material,
-        "image_preview": f"data:image/png;base64,{img_preview_b64}"
-    }
 
     log_entry = {
         "timestamp": datetime.now().isoformat(),
@@ -111,11 +110,12 @@ def analyze_image_v2(image, source, filename="N/A"):
         "input_source": source,
         "image_file": filename,
         "predicted_class": predicted_class_for_log,
-        "confidence": f"{result['confidence']:.2%}",
-        "is_spoof": result["is_spoof"]
+        "confidence": f"{log_confidence:.2%}",
+        "is_spoof": result["is_spoof"],
+        "image_preview": f"data:image/png;base64,{img_preview_b64}"
     }
-    if suspected_material:
-        log_entry["suspected_material"] = suspected_material
+    if result["suspected_material"]:
+        log_entry["suspected_material"] = result["suspected_material"]
 
     log_event(log_entry)
     
@@ -139,6 +139,7 @@ def history():
 @app.route('/analyze', methods=['POST'])
 def analyze():
     file = request.files.get('fingerprint_image')
+    
     if not file or file.filename == '':
         return jsonify({"error": "No image file provided."}), 400
 

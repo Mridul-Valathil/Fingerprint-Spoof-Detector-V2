@@ -1,146 +1,102 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan History</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .font-mono { font-family: 'Roboto Mono', monospace; }
-        .btn {
-            transition: all 0.2s ease-in-out;
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .aurora-background {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
         }
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800">
-    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
-        <header class="flex justify-between items-center mb-10">
-            <h1 class="text-5xl font-bold text-gray-900">Scan History</h1>
-            <a href="/" class="btn bg-indigo-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-indigo-700 shadow-md">
-                &larr; Back to Analyzer
-            </a>
-        </header>
-
-        <section class="bg-white p-6 rounded-2xl shadow-lg">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prediction</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Confidence</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outcome</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        {% if logs %}
-                            {% for log in logs %}
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ log.timestamp.split('T')[1].split('.')[0] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ log.input_source }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold {{ 'text-red-600' if log.is_spoof else 'text-green-600' }}">{{ log.predicted_class }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-mono">{{ log.confidence }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold {{ 'text-red-600' if log.is_spoof else 'text-green-600' }}">
-                                    {{ 'Access Denied' if log.is_spoof else 'Access Granted' }}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center py-10 text-gray-500">No scan history found.</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-</body>
-</html>
- -->
-
-
-
-
-
-
-
-
- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan History</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Poppins', sans-serif;
-            color: #e5e7eb; /* Light gray text for dark background */
-            /* New Liquid Aurora Background */
-            background-color: #111827; /* Dark gray fallback */
-            background-image:
-                radial-gradient(at 47% 33%, hsla(162, 77%, 40%, 0.3) 0, transparent 59%),
-                radial-gradient(at 82% 65%, hsla(218, 39%, 35%, 0.3) 0, transparent 55%);
-            min-height: 100vh;
-            overflow-x: hidden;
+        .aurora-shape {
+            position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3;
         }
-        .font-mono {
-            font-family: 'Roboto Mono', monospace;
+        .aurora-shape-1 {
+            width: 500px; height: 500px; background: #4f46e5; top: -150px; left: -150px; animation: move-aurora-1 20s infinite alternate;
         }
-        /* Enhanced Glass Card Effect */
+        .aurora-shape-2 {
+            width: 400px; height: 400px; background: #db2777; bottom: -100px; right: -100px; animation: move-aurora-2 25s infinite alternate;
+        }
+        @keyframes move-aurora-1 { from { transform: translate(-50px, -50px) rotate(0deg); } to { transform: translate(50px, 50px) rotate(360deg); } }
+        @keyframes move-aurora-2 { from { transform: translate(50px, 50px) rotate(0deg); } to { transform: translate(-50px, -50px) rotate(-360deg); } }
         .glass-card {
-            background: rgba(31, 41, 55, 0.5); /* Semi-transparent dark gray */
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
-        .btn {
-            transition: all 0.2s ease-in-out;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
+        /* Style for date picker icon */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8);
         }
     </style>
 </head>
-<body class="text-gray-200">
-    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
-        <header class="flex justify-between items-center mb-10">
-            <h1 class="text-5xl font-bold text-white">Scan History</h1>
-            <a href="/" class="btn bg-gray-700/50 text-white font-semibold py-2.5 px-4 border border-gray-600 rounded-lg shadow-sm hover:bg-gray-600/50 whitespace-nowrap">
+<body class="bg-gray-900 text-gray-200">
+
+    <div class="aurora-background">
+        <div class="aurora-shape aurora-shape-1"></div>
+        <div class="aurora-shape aurora-shape-2"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white">Scan History</h1>
+                <p class="text-md text-gray-400">Review and filter past analysis results.</p>
+            </div>
+            <a href="/" class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-sm font-semibold text-white hover:bg-white/20 transition-colors">
                 &larr; Back to Analyzer
             </a>
         </header>
 
+        <!-- Filter Controls -->
+        <section class="glass-card p-6 rounded-2xl mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div>
+                    <label for="date-filter" class="block text-sm font-medium text-gray-300 mb-1">Filter by Date</label>
+                    <input type="date" id="date-filter" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                </div>
+                <div>
+                    <label for="status-filter" class="block text-sm font-medium text-gray-300 mb-1">Filter by Status</label>
+                    <select id="status-filter" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                        <option value="all">All Results</option>
+                        <option value="live">Genuine Only</option>
+                        <option value="spoof">Spoof Only</option>
+                    </select>
+                </div>
+                <button id="reset-filters" class="w-full bg-gray-600/50 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500/50 transition-colors">
+                    Reset Filters
+                </button>
+            </div>
+        </section>
+
+        <!-- History Table -->
         <section class="glass-card p-6 rounded-2xl">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-700">
-                    <thead class="bg-gray-900/50">
+                    <thead class="bg-black/20">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Source</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Timestamp</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Prediction</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Confidence</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Outcome</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-700">
+                    <tbody id="history-table-body" class="divide-y divide-gray-700">
                         {% if logs %}
                             {% for log in logs %}
-                            <tr class="hover:bg-gray-800/50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">{{ log.timestamp.split('T')[1].split('.')[0] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ log.input_source }}</td>
+                            <tr class="log-row" data-timestamp="{{ log.timestamp }}" data-status="{{ 'spoof' if log.is_spoof else 'live' }}">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ log.timestamp.replace('T', ' ').split('.')[0] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold {{ 'text-red-400' if log.is_spoof else 'text-green-400' }}">{{ log.predicted_class }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">{{ log.confidence }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ log.confidence }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold {{ 'text-red-400' if log.is_spoof else 'text-green-400' }}">
                                     {{ 'Access Denied' if log.is_spoof else 'Access Granted' }}
                                 </td>
@@ -148,7 +104,7 @@
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="5" class="text-center py-10 text-gray-500">No scan history found.</td>
+                                <td colspan="4" class="text-center py-10 text-gray-500">No scan history found.</td>
                             </tr>
                         {% endif %}
                     </tbody>
@@ -156,6 +112,46 @@
             </div>
         </section>
     </div>
+
+    <script>
+        const dateFilter = document.getElementById('date-filter');
+        const statusFilter = document.getElementById('status-filter');
+        const resetBtn = document.getElementById('reset-filters');
+        const tableBody = document.getElementById('history-table-body');
+        const allRows = tableBody.querySelectorAll('.log-row');
+
+        function filterLogs() {
+            const selectedDate = dateFilter.value; // YYYY-MM-DD format
+            const selectedStatus = statusFilter.value;
+
+            allRows.forEach(row => {
+                const rowTimestamp = row.dataset.timestamp;
+                const rowStatus = row.dataset.status;
+
+                // Date check
+                const dateMatch = !selectedDate || rowTimestamp.startsWith(selectedDate);
+
+                // Status check
+                const statusMatch = (selectedStatus === 'all') || (rowStatus === selectedStatus);
+
+                // Show or hide row
+                if (dateMatch && statusMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function resetAllFilters() {
+            dateFilter.value = '';
+            statusFilter.value = 'all';
+            filterLogs();
+        }
+
+        dateFilter.addEventListener('input', filterLogs);
+        statusFilter.addEventListener('change', filterLogs);
+        resetBtn.addEventListener('click', resetAllFilters);
+    </script>
 </body>
 </html>
-

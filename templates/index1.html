@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fingerprint Liveness Detector V2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .aurora-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .aurora-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+        }
+        .aurora-shape-1 {
+            width: 500px;
+            height: 500px;
+            background: #4f46e5;
+            top: -150px;
+            left: -150px;
+            animation: move-aurora-1 20s infinite alternate;
+        }
+        .aurora-shape-2 {
+            width: 400px;
+            height: 400px;
+            background: #db2777;
+            bottom: -100px;
+            right: -100px;
+            animation: move-aurora-2 25s infinite alternate;
+        }
+        @keyframes move-aurora-1 {
+            from { transform: translate(-50px, -50px) rotate(0deg); }
+            to { transform: translate(50px, 50px) rotate(360deg); }
+        }
+        @keyframes move-aurora-2 {
+            from { transform: translate(50px, 50px) rotate(0deg); }
+            to { transform: translate(-50px, -50px) rotate(-360deg); }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <div class="aurora-background">
+        <div class="aurora-shape aurora-shape-1"></div>
+        <div class="aurora-shape aurora-shape-2"></div>
+    </div>
+
+    <div class="min-h-screen container mx-auto px-4 py-8 flex flex-col">
+        <!-- Header -->
+        <header class="flex justify-between items-center pb-6">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white">Fingerprint Analysis System <span class="text-indigo-400">V2</span></h1>
+                <p class="text-md text-gray-400">Two-Phase Liveness & Material Classification</p>
+            </div>
+            <a href="/history" class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-sm font-semibold text-white hover:bg-white/20 transition-colors">
+                View History
+            </a>
+        </header>
+
+        <main class="flex-grow flex flex-col items-center justify-center">
+            <div class="w-full max-w-3xl glass-card rounded-2xl shadow-2xl p-8 space-y-8">
+                
+                <!-- 1. Upload Section -->
+                <div>
+                    <label class="block text-lg font-semibold mb-4 text-white">Upload Fingerprint</label>
+                    <div id="drop-zone" class="relative block w-full rounded-lg border-2 border-dashed border-gray-500 p-8 text-center hover:border-indigo-400 transition-colors cursor-pointer">
+                        <div class="flex flex-col items-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            <span class="mt-2 block text-sm font-semibold text-gray-300">Drag & drop a file here</span>
+                            <span class="text-xs text-gray-500">or</span>
+                            <span class="relative mt-2 cursor-pointer rounded-md font-medium text-indigo-400 hover:text-indigo-300">
+                                <span>click to upload</span>
+                                <input id="fingerprint-input" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Preview & Actions Section -->
+                <div id="preview-section" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400 mb-2">Preview:</p>
+                            <div class="aspect-square bg-black/20 rounded-lg p-2 flex items-center justify-center">
+                                <img id="image-preview" src="#" alt="Image Preview" class="max-h-full max-w-full object-contain rounded">
+                            </div>
+                        </div>
+                        <div class="flex flex-col space-y-4">
+                            <button id="analyze-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors">
+                                Analyze Fingerprint
+                            </button>
+                            <button id="clear-button" class="w-full bg-gray-600/50 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-500/50 transition-colors">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 3. Result Section -->
+                <div id="result-section" class="hidden pt-8 border-t border-white/10">
+                    <h2 class="text-lg font-semibold mb-4 text-white">Analysis Result</h2>
+                    <div id="result-content">
+                         <!-- JS will populate this -->
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('fingerprint-input');
+        const analyzeButton = document.getElementById('analyze-button');
+        const clearButton = document.getElementById('clear-button');
+        const previewSection = document.getElementById('preview-section');
+        const imagePreview = document.getElementById('image-preview');
+        const resultSection = document.getElementById('result-section');
+        const resultContent = document.getElementById('result-content');
+
+        let currentFile = null;
+
+        // --- Event Listeners ---
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('border-indigo-400', 'bg-indigo-900/20'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-indigo-400', 'bg-indigo-900/20'), false);
+        });
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        analyzeButton.addEventListener('click', handleAnalysis);
+        clearButton.addEventListener('click', resetUI);
+      
+        // --- Core Functions ---
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let file = dt.files[0];
+            handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                currentFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    previewSection.classList.remove('hidden');
+                    resultSection.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please upload a valid image file.');
+            }
+        }
+
+        function resetUI() {
+            currentFile = null;
+            fileInput.value = '';
+            previewSection.classList.add('hidden');
+            resultSection.classList.add('hidden');
+            resultContent.innerHTML = '';
+        }
+
+        async function handleAnalysis() {
+            if (!currentFile) {
+                alert('Please select a file first.');
+                return;
+            }
+
+            setResultContent(getLoadingHTML());
+
+            const formData = new FormData();
+            formData.append('fingerprint_image', currentFile);
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    setResultContent(getResultHTML(result));
+                } else {
+                    setResultContent(getErrorHTML(result.error || 'An unknown error occurred.'));
+                }
+            } catch (error) {
+                setResultContent(getErrorHTML('Could not connect to the server.'));
+            }
+        }
+
+        function setResultContent(html) {
+            resultContent.innerHTML = html;
+            resultSection.classList.remove('hidden');
+        }
+
+        // --- HTML Template Functions ---
+        function getLoadingHTML() {
+            return `
+                <div class="flex flex-col items-center justify-center h-full text-center text-gray-400">
+                    <svg class="animate-spin h-10 w-10 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="mt-4 font-semibold">Analyzing...</p>
+                </div>`;
+        }
+        
+        function getErrorHTML(message) {
+            return `
+                <div class="flex flex-col items-center justify-center h-full text-center text-red-400">
+                    <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p class="font-semibold">Analysis Failed</p>
+                    <p class="text-sm">${message}</p>
+                </div>`;
+        }
+
+        function getResultHTML(result) {
+            const isSpoof = result.is_spoof;
+            
+            const statusText = isSpoof ? 'SPOOF DETECTED' : 'GENUINE FINGERPRINT';
+            const statusColor = isSpoof ? 'text-red-400' : 'text-green-400';
+            
+            const livenessText = `Liveness Status: ${result.liveness_status}`;
+            
+            let materialHTML = '';
+            let finalConfidence = 0;
+            
+            if (isSpoof && result.suspected_material) {
+                materialHTML = `<p class="text-sm text-gray-300">Suspected Material: <span class="font-semibold text-white">${result.suspected_material}</span></p>`;
+                finalConfidence = (result.material_confidence || 0) * 100;
+            } else {
+                finalConfidence = (result.liveness_confidence || 0) * 100;
+            }
+            const finalConfidenceText = `${finalConfidence.toFixed(2)}%`;
+
+            const confidenceBarColor = isSpoof ? 'bg-red-500' : 'bg-green-500';
+
+            return `
+                <div class="flex items-center space-x-6">
+                    <div class="flex-shrink-0">
+                        <img src="${imagePreview.src}" class="h-28 w-28 object-contain rounded-lg border border-white/20 p-1 bg-black/20">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-2xl font-bold ${statusColor}">${statusText}</p>
+                        <p class="text-sm text-gray-300">${livenessText}</p>
+                        ${materialHTML}
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Confidence</label>
+                    <div class="w-full bg-white/10 rounded-full h-2.5">
+                        <div style="width: ${finalConfidence}%" class="h-2.5 rounded-full transition-all duration-500 ${confidenceBarColor}"></div>
+                    </div>
+                    <p class="text-right text-sm font-semibold mt-1 text-white">${finalConfidenceText}</p>
+                </div>
+            `;
+        }
+
+    </script>
+</body>
+</html>

@@ -1,271 +1,373 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fingerprint Spoof Detector</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f7f6; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: #fff; padding: 2rem 3rem; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); text-align: center; max-width: 500px; width: 100%; }
-        h1 { color: #1a2533; }
-        input[type="file"] { border: 2px dashed #ccc; padding: 1.5rem; border-radius: 8px; cursor: pointer; margin: 1rem 0; display: block; width: calc(100% - 3rem); }
-        input[type="submit"] { background-color: #007bff; color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: background-color 0.3s; }
-        input[type="submit"]:hover { background-color: #0056b3; }
-        .result { margin-top: 2rem; padding: 1.5rem; border-radius: 8px; }
-        .result.spoof { background-color: #ffebee; border: 1px solid #e57373; color: #c62828; }
-        .result.live { background-color: #e8f5e9; border: 1px solid #81c784; color: #2e7d32; }
-        .result h2 { margin-top: 0; }
-        .uploaded-image { max-width: 200px; margin-top: 1rem; border-radius: 8px; border: 2px solid #ddd; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Fingerprint Liveness Detector</h1>
-        <p>Upload a fingerprint image to check if it's genuine or a spoof.</p>
-        <form action="/" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept="image/*" required>
-            <input type="submit" value="Analyze Fingerprint">
-        </form>
-
-        {% if error %}
-            <p style="color: red;">{{ error }}</p>
-        {% endif %}
-
-        {% if result %}
-            <div class="result {{ 'spoof' if result.is_spoof else 'live' }}">
-                {% if result.is_spoof %}
-                    <h2>🚨 ALERT: SPOOF DETECTED 🚨</h2>
-                    <p><strong>Outcome:</strong> Access Denied</p>
-                    <p><strong>Suspected Material:</strong> {{ result.suspected_material }}</p>
-                {% else %}
-                    <h2>✅ GENUINE FINGERPRINT ✅</h2>
-                    <p><strong>Outcome:</strong> Access Granted</p>
-                {% endif %}
-                <p><strong>Confidence:</strong> {{ result.confidence }}</p>
-                
-                {% if image_file %}
-                    <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Uploaded Fingerprint" class="uploaded-image">
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
-</body>
-</html> -->
-
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fingerprint Liveness Detector</title>
+    <title>Fingerprint Analysis System | Modern Glass Design</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { 
-            font-family: 'Poppins', sans-serif;
-            color: #e5e7eb; /* Light gray text for dark background */
-            /* New Liquid Aurora Background */
-            background-color: #111827; /* Dark gray fallback */
-            background-image:
-                radial-gradient(at 47% 33%, hsla(162, 77%, 40%, 0.3) 0, transparent 59%),
-                radial-gradient(at 82% 65%, hsla(218, 39%, 35%, 0.3) 0, transparent 55%);
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--light);
             min-height: 100vh;
-            overflow-x: hidden;
         }
-        .font-mono {
-            font-family: 'Roboto Mono', monospace;
-        }
-        /* Enhanced Glass Card Effect */
-        .glass-card {
-            background: rgba(31, 41, 55, 0.5); /* Semi-transparent dark gray */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            border-radius: 16px;
         }
-        .btn {
-            transition: all 0.2s ease-in-out;
+        
+        .glass-button {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
-        .btn:hover {
+        
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
-        .apple-btn {
-            background-color: rgba(0, 122, 255, 0.8);
-            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
         }
-        .apple-btn:hover {
-            background-color: rgba(0, 122, 255, 1);
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse-ring {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .scan-line {
+            position: absolute;
+            height: 6px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.8;
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+        
+        .tab-active {
+            background: rgba(255, 255, 255, 0.15);
+            border-bottom: 2px solid var(--primary);
         }
     </style>
 </head>
-<body class="text-gray-200">
+<body class="relative overflow-x-hidden">
+    <!-- Animated background elements -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div class="absolute -top-1/2 -right-1/2 w-full h-full opacity-20">
+            <div class="absolute top-0 left-0 w-96 h-96 rounded-full bg-purple-500 mix-blend-soft-light filter blur-3xl animate-pulse"></div>
+            <div class="absolute top-0 right-0 w-96 h-96 rounded-full bg-pink-500 mix-blend-soft-light filter blur-3xl animate-pulse animation-delay-2000"></div>
+            <div class="absolute bottom-0 left-1/4 w-96 h-96 rounded-full bg-blue-500 mix-blend-soft-light filter blur-3xl animate-pulse animation-delay-4000"></div>
+        </div>
+    </div>
 
-    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
-        <!-- HEADER -->
-        <header class="flex justify-between items-center mb-10">
-            <div class="w-48"></div> <!-- Spacer -->
-            <div class="text-center">
-                <h1 class="text-5xl font-bold text-white">Fingerprint Spoof Detector</h1>
-                <p class="text-xl text-gray-400 mt-3">And Material Classification.</p>
+    <!-- Main content -->
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12">
+            <div class="mb-6 md:mb-0">
+                <h1 class="text-4xl font-bold">
+                    <span class="gradient-text">Fingerprint Analysis</span>
+                    <span class="text-white"> System</span>
+                </h1>
+                <p class="text-gray-400 mt-2">Advanced liveness detection and material classification</p>
             </div>
-            <div class="w-48 text-right">
-                <a href="/history" class="btn bg-gray-700/50 text-white font-semibold py-2 px-4 border border-gray-600 rounded-lg shadow-sm hover:bg-gray-600/50 whitespace-nowrap">
-                    View History
+            
+            <div class="flex space-x-4">
+                <a href="/history" class="glass-button px-6 py-3 rounded-full font-medium flex items-center">
+                    <i class="fas fa-history mr-2"></i> History
                 </a>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-            <!-- Left Column: Actions -->
-            <div class="md:col-span-2 glass-card p-6 rounded-2xl">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-3 text-white">Analysis Actions</h2>
-                
-                <form id="upload-form">
-                    <label for="fingerprint_image" class="block text-sm font-medium text-gray-300 mb-2">Upload Fingerprint</label>
-                    <input type="file" name="fingerprint_image" id="fingerprint_image" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700/50 file:text-gray-200 hover:file:bg-gray-600/50 cursor-pointer" required>
-                    
-                    <div id="image-preview-container" class="mt-4 hidden">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Preview</label>
-                        <img id="image-preview" src="#" alt="Image preview" class="w-full h-auto rounded-lg shadow-md border border-gray-700"/>
-                    </div>
-
-                    <button type="submit" class="btn apple-btn mt-4 w-full text-white font-bold py-2.5 px-4 rounded-lg">
-                        Analyze Fingerprint
-                    </button>
-                </form>
+        <!-- Main card -->
+        <div class="glass-panel p-8 rounded-2xl">
+            <!-- Tabs -->
+            <div class="flex mb-8 border-b border-gray-700">
+                <button class="tab-active px-6 py-3 font-medium text-white flex items-center">
+                    <i class="fas fa-upload mr-2"></i> Upload Fingerprint
+                </button>
             </div>
-
-            <!-- Right Column: Result -->
-            <div class="md:col-span-3 glass-card p-6 rounded-2xl">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-3 text-white">Analysis Result</h2>
-                <div id="result-container" class="transition-all duration-300">
-                    <div id="placeholder" class="text-center text-gray-500 py-20">
-                        <svg class="mx-auto h-12 w-12 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        <p class="mt-2">Results will be displayed here.</p>
+            
+            <!-- Upload area -->
+            <div class="mb-10">
+                <div id="drop-zone" class="relative border-2 border-dashed border-gray-600 rounded-2xl p-12 text-center transition-all duration-300 hover:border-indigo-400 cursor-pointer">
+                    <div class="floating-element">
+                        <div class="mx-auto w-20 h-20 bg-indigo-900/30 rounded-full flex items-center justify-center mb-6">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-indigo-400"></i>
+                        </div>
                     </div>
+                    <p class="text-xl font-semibold mb-2">Drag & drop your fingerprint image</p>
+                    <p class="text-gray-400 mb-4">Supports JPG, PNG, or WebP formats</p>
+                    <label class="glass-button inline-block px-6 py-3 rounded-full cursor-pointer">
+                        <span>Browse files</span>
+                        <input id="fingerprint-input" type="file" class="hidden">
+                    </label>
+                    <div class="scan-line hidden"></div>
+                </div>
+            </div>
+            
+            <!-- Preview section -->
+            <div id="preview-section" class="hidden mb-10">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-image mr-2 text-indigo-400"></i> Image Preview
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="relative">
+                        <div class="glass-panel p-4 rounded-xl">
+                            <img id="image-preview" src="#" alt="Preview" class="rounded-lg w-full h-64 object-contain">
+                        </div>
+                        <div class="pulse-ring absolute -top-2 -right-2 w-6 h-6 rounded-full bg-indigo-500"></div>
+                    </div>
+                    
+                    <div class="flex flex-col justify-center space-y-4">
+                        <button id="analyze-button" class="glass-button py-4 rounded-xl font-semibold text-lg flex items-center justify-center">
+                            <i class="fas fa-search mr-2"></i> Analyze Fingerprint
+                        </button>
+                        <button id="clear-button" class="glass-button py-3 rounded-xl font-medium flex items-center justify-center">
+                            <i class="fas fa-times mr-2"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results section -->
+            <div id="result-section" class="hidden">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-chart-line mr-2 text-indigo-400"></i> Analysis Results
+                </h2>
+                
+                <div id="result-content" class="glass-panel p-6 rounded-xl">
+                    <!-- Results will be dynamically inserted here -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const uploadForm = document.getElementById('upload-form');
-        const resultContainer = document.getElementById('result-container');
-        const fileInput = document.getElementById('fingerprint_image');
-        const imagePreviewContainer = document.getElementById('image-preview-container');
+        // DOM Elements
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('fingerprint-input');
+        const analyzeButton = document.getElementById('analyze-button');
+        const clearButton = document.getElementById('clear-button');
+        const previewSection = document.getElementById('preview-section');
         const imagePreview = document.getElementById('image-preview');
+        const resultSection = document.getElementById('result-section');
+        const resultContent = document.getElementById('result-content');
+        const scanLine = document.querySelector('.scan-line');
 
-        fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
-            if (file) {
+        let currentFile = null;
+
+        // Event Listeners
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropZone.addEventListener(eventName, preventDefaults, false));
+        ['dragenter', 'dragover'].forEach(eventName => dropZone.addEventListener(eventName, highlight, false));
+        ['dragleave', 'drop'].forEach(eventName => dropZone.addEventListener(eventName, unhighlight, false));
+        
+        dropZone.addEventListener('drop', handleDrop, false);
+        
+        analyzeButton.addEventListener('click', handleAnalysis);
+        clearButton.addEventListener('click', resetUI);
+
+        // Functions
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        function highlight() { dropZone.classList.add('border-indigo-400', 'bg-indigo-900/20'); scanLine.classList.remove('hidden'); }
+        function unhighlight() { dropZone.classList.remove('border-indigo-400', 'bg-indigo-900/20'); scanLine.classList.add('hidden'); }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                currentFile = file;
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     imagePreview.src = e.target.result;
-                    imagePreviewContainer.classList.remove('hidden');
+                    previewSection.classList.remove('hidden');
+                    resultSection.classList.add('hidden');
                 };
                 reader.readAsDataURL(file);
             } else {
-                imagePreviewContainer.classList.add('hidden');
+                showNotification('Please upload a valid image file.', 'error');
             }
-        });
+        }
 
-        const showLoading = () => {
-            resultContainer.innerHTML = `
-                <div class="text-center text-gray-400 py-20">
-                    <svg class="animate-spin mx-auto h-10 w-10 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <p class="mt-3">Analyzing... Please wait.</p>
-                </div>
-            `;
-        };
-        
-        const updateResultUI = (result) => {
-            const isSpoof = result.is_spoof;
-            const confidencePercent = (result.confidence * 100).toFixed(2);
-            const resultColor = isSpoof ? 'red' : 'green';
-            const resultTextColor = isSpoof ? 'text-red-400' : 'text-green-400';
-            const resultIcon = isSpoof ? 
-                `<svg class="w-10 h-10 ${resultTextColor}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>` : 
-                `<svg class="w-10 h-10 ${resultTextColor}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+        function resetUI() {
+            currentFile = null;
+            fileInput.value = '';
+            previewSection.classList.add('hidden');
+            resultSection.classList.add('hidden');
+            resultContent.innerHTML = '';
+        }
 
-            let materialHtml = '';
-            if (isSpoof) {
-                materialHtml = `<div class="text-sm"><strong>Suspected Material:</strong> <span class="font-mono p-1 bg-red-900/50 text-red-300 rounded">${result.suspected_material}</span></div>`;
+        async function handleAnalysis() {
+            if (!currentFile) {
+                showNotification('Please select a file first.', 'error');
+                return;
             }
+            setResultContent(getLoadingHTML());
+            resultSection.classList.remove('hidden');
 
-            const resultHtml = `
-                <div class="flex items-center space-x-4">
-                    <div class="flex-shrink-0">
-                        <img src="${result.image_preview}" alt="Fingerprint Preview" class="w-24 h-24 rounded-lg object-cover border-2 border-${resultColor}-500/50">
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex items-center space-x-3">
-                            ${resultIcon}
-                            <h3 class="text-2xl font-bold ${resultTextColor}">${isSpoof ? 'SPOOF DETECTED' : 'Genuine Fingerprint'}</h3>
-                        </div>
-                        <p class="mt-2 text-sm text-gray-300"><strong>Prediction:</strong> <span class="font-mono">${result.predicted_class}</span></p>
-                        ${materialHtml}
-                        <div class="mt-3">
-                            <div class="flex justify-between mb-1">
-                                <span class="text-base font-medium text-gray-300">Confidence</span>
-                                <span class="text-sm font-medium text-gray-300">${confidencePercent}%</span>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2.5">
-                                <div class="bg-${resultColor}-500 h-2.5 rounded-full" style="width: ${confidencePercent}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            resultContainer.innerHTML = resultHtml;
-        };
-
-        const handleError = (errorMessage) => {
-            resultContainer.innerHTML = `
-                <div class="text-center text-red-400 py-20">
-                     <svg class="mx-auto h-12 w-12 text-red-500/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-                    <p class="mt-2 font-semibold">An Error Occurred</p>
-                    <p class="text-sm">${errorMessage}</p>
-                </div>
-            `;
-        };
-        
-        uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!fileInput.files[0]) return;
-
-            showLoading();
             const formData = new FormData();
-            formData.append('fingerprint_image', fileInput.files[0]);
-
+            formData.append('fingerprint_image', currentFile);
+            
             try {
-                const response = await fetch('/analyze', {
-                    method: 'POST',
-                    body: formData
-                });
+                const response = await fetch('/analyze', { method: 'POST', body: formData });
                 const result = await response.json();
                 if (response.ok) {
-                    updateResultUI(result);
+                    setResultContent(getResultHTML(result));
                 } else {
-                    handleError(result.error || 'Failed to analyze image.');
+                    setResultContent(getErrorHTML(result.error || 'An unknown error occurred.'));
                 }
             } catch (error) {
-                handleError('A network error occurred.');
+                setResultContent(getErrorHTML('Could not connect to the server.'));
             }
-        });
+        }
+
+        function setResultContent(html) {
+            resultContent.innerHTML = html;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-6 right-6 glass-panel px-6 py-4 rounded-xl flex items-center transform transition-all duration-300 translate-x-full`;
+            let icon = 'info-circle', color = 'blue-400';
+            if (type === 'error') { icon = 'exclamation-circle'; color = 'red-400'; } 
+            else if (type === 'success') { icon = 'check-circle'; color = 'green-400'; }
+            notification.innerHTML = `<i class="fas fa-${icon} text-${color} mr-3"></i><span>${message}</span>`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.remove('translate-x-full'), 10);
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // HTML Template Functions
+        function getLoadingHTML() {
+            return `<div class="flex flex-col items-center justify-center py-10"><div class="relative w-20 h-20 mb-6"><div class="absolute inset-0 rounded-full border-4 border-indigo-500/30"></div><div class="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-400 animate-spin"></div></div><p class="text-lg font-semibold">Analyzing Fingerprint</p><p class="text-gray-400 mt-2">This may take a few seconds...</p></div>`;
+        }
+        
+        function getErrorHTML(message) {
+            return `<div class="flex flex-col items-center justify-center py-10 text-red-400"><div class="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-6"><i class="fas fa-exclamation-triangle text-3xl"></i></div><p class="text-lg font-semibold">Analysis Failed</p><p class="text-sm text-center mt-2">${message}</p></div>`;
+        }
+        
+        // --- CORRECTED ---
+        function getResultHTML(result) {
+            const isSpoof = result.is_spoof;
+            // Use the single 'confidence' key from the backend
+            const confidenceValue = (typeof result.confidence === 'number' ? result.confidence : 0) * 100;
+            const confidenceText = `${confidenceValue.toFixed(2)}%`;
+            
+            const statusText = isSpoof ? 'SPOOF DETECTED' : 'GENUINE FINGERPRINT';
+            const statusColor = isSpoof ? 'text-red-400' : 'text-green-400';
+            const statusIcon = isSpoof ? 'times-circle' : 'check-circle';
+            const statusBg = isSpoof ? 'bg-red-500/10' : 'bg-green-500/10';
+            const confidenceBarColor = isSpoof ? 'bg-red-500' : 'bg-green-500';
+            
+            let materialHTML = '';
+            if (isSpoof && result.suspected_material) {
+                materialHTML = `
+                    <div class="flex items-center mt-4">
+                        <div class="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center mr-3">
+                            <i class="fas fa-cube text-purple-400"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400">Suspected Material</p>
+                            <p class="font-semibold">${result.suspected_material}</p>
+                        </div>
+                    </div>`;
+            }
+
+            return `
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <div class="flex-shrink-0">
+                        <div class="relative">
+                            <img src="${result.image_preview || imagePreview.src}" class="h-40 w-40 object-contain rounded-xl border border-white/10 p-2 bg-black/20">
+                            <div class="absolute -top-2 -right-2 w-10 h-10 rounded-full ${statusBg} flex items-center justify-center">
+                                <i class="fas fa-${statusIcon} ${statusColor}"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center mb-4">
+                            <span class="text-2xl font-bold ${statusColor}">${statusText}</span>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center mr-3">
+                                <i class="fas fa-heartbeat text-blue-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Liveness Status</p>
+                                <p class="font-semibold">${result.liveness_status}</p>
+                            </div>
+                        </div>
+                        
+                        ${materialHTML}
+                        
+                        <div class="mt-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="text-sm text-gray-400">Confidence Level</p>
+                                <p class="text-sm font-semibold">${confidenceText}</p>
+                            </div>
+                            <div class="w-full bg-white/10 rounded-full h-2.5">
+                                <div style="width: ${confidenceValue}%" class="h-2.5 rounded-full transition-all duration-500 ${confidenceBarColor}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        }
     </script>
 </body>
 </html>
